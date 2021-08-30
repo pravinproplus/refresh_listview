@@ -10,15 +10,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   var data;
+  bool isnull = false;
 
   Future getlistData() async {
     try {
       NetworkHelper networkHelper =
           NetworkHelper(url: 'https://jsonplaceholder.typicode.com/todos');
+      var ds = await networkHelper.getData();
 
-      data = await networkHelper.getData();
       setState(() {
-        print(data[0]['id']);
+        data = ds;
+        isnull = true;
       });
     } catch (e) {
       print(e);
@@ -33,26 +35,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('List View'),
-      ),
-      body: RefreshIndicator(
-        onRefresh: getlistData,
-        child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: data.length,
-            // physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListTile(
-                  title: Text(data[index]['id'].toString()),
-                  subtitle: Text(data[index]['title']),
-                ),
-              );
-            }),
-      ),
-    );
+    return isnull == false
+        ? Scaffold(body: Center(child: CircularProgressIndicator()))
+        : Scaffold(
+            appBar: AppBar(
+              title: Text('List View'),
+            ),
+            body: RefreshIndicator(
+              onRefresh: getlistData,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: data.length,
+                  // physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        title: Text(data[index]['id'].toString()),
+                        subtitle: Text(data[index]['title']),
+                      ),
+                    );
+                  }),
+            ),
+          );
   }
 }
