@@ -10,7 +10,7 @@ class NetworkHelper {
     try {
       Response response = await dio.get(url!);
       data = response.data;
-      print(data);
+      //print(data);
       return data;
     } catch (e) {
       print(e);
